@@ -7,7 +7,8 @@ Wordpress内に、リスト形式で並べて、
 を利用しました。  
 
 # 使用方法
-
+/wp-content/plugins/にinsta-popupを格納し、  
+プラグインを有効化後、  
 管理画面で、  
 username,  
 access token,   
