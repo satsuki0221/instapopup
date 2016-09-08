@@ -21,9 +21,60 @@
 			$this->InstaData = $photosData;
 		}
 
+		protected function initialization(){
+
+			$instaData = $this->InstaData;
+			$instaContents = [];
+			$index = 0;
+
+			foreach ($instaData->data as $data) {
+
+				$instaContents[$index]['url'] = $data->link;
+				$instaContents[$index]['thum'] = $data->images->standard_resolution->url;
+
+				if( $data->type == 'video' ){
+					$instaContents[$index]["movie"] = $data->videos->standard_resolution->url;
+				}else{
+					$instaContents[$index]["movie"] = false;
+				}
+
+				if( $data->caption === null ){
+
+					$instaContents[$index]['created_time'] =  date ('F d,Y', $data->created_time);
+					$instaContents[$index]["caption"] = '';
+					$instaContents[$index]["hashTagList"] = '';
+
+				}else{
+
+					$captionText = $data->caption->text;
+
+					$hashTagArray = [];
+					$hashLength = intval( substr_count($data->caption->text, "#") );
+					$matches = preg_match_all('/(#[a-zA-Z0-9\x81-\x9f\xe0-\xfc\x40-\x7e\x80-\xfc]+)/', $captionText, $hashTags);
+					$captionTextNew = str_replace($hashTags[0],'',$captionText);
+
+					$instaContents[$index]['created_time'] =  date ('F d,Y', $data->caption->created_time);
+					$instaContents[$index]["caption"] = $captionTextNew;
+					$instaContents[$index]["hashTagList"] = $hashTags[0];
+
+
+				}
+
+				$instaContents[$index]['id'] = $data->id;
+				$instaContents[$index]["like"] = $data->likes->count;
+
+				$index++;
+			}
+
+			return $instaContents;
+		}
+
+		public function apiData(){
+			return $this->InstaData;
+		}
 
 		public function getInstaData(){
-			return $this->InstaData;
+			return  $this->initialization();
 		}
 
 	}

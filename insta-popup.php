@@ -31,6 +31,13 @@ require_once( INSTAPOPUP__PLUGIN_DIR . 'class.Insta.php' );
 class InstaPOPUP {
 	function __construct() {
 		add_action('admin_menu', array($this, 'add_pages'));
+		add_action( 'wp_head', 'add_css_js' );
+		function add_css_js(){
+			echo '<link rel="stylesheet" href="'. INSTAPOPUP__PLUGIN_URL .'assets/js/lib/colorbox/colorbox.css">';
+			echo '<link rel="stylesheet" href="'. INSTAPOPUP__PLUGIN_URL .'assets/css/instapopup.css">';
+			echo '<script src="'. INSTAPOPUP__PLUGIN_URL .'assets/js/lib/colorbox/jquery.colorbox-min.js"></script>';
+			echo '<script src="'. INSTAPOPUP__PLUGIN_URL .'assets/js/instapopup.js"></script>';
+		}
 	}
 	function add_pages() {
 		add_menu_page('Insta Setting','Insta Setting',  'level_8', __FILE__, array($this,'show_text_option_page'), '', 26);
@@ -54,100 +61,86 @@ class InstaPOPUP {
 					$token = isset($opt['token']) ? $opt['token']: null;
 					$display = isset($opt['display']) ? $opt['display']: null;
 				?>
-					<table class="form-table">
+					<table>
 						<tr valign="top">
 							<th scope="row"><label for="inputtext">User Acocunt</label></th>
-							<td><input name="instapopup_options[account]" type="text" id="inputtext1" value="<?php  echo $account ?>" class="regular-text" /></td>
+							<td><input name="instapopup_options[account]" type="text" id="inputtext1" value="<?php  echo $account ?>" /></td>
 						</tr>
 						<tr valign="top">
 							<th scope="row"><label for="inputtext">Access Token</label></th>
-							<td><input name="instapopup_options[token]" type="text" id="inputtext2" value="<?php  echo $token ?>" class="regular-text" /></td>
+							<td><input name="instapopup_options[token]" type="password" id="inputtext2" value="<?php  echo $token ?>" /></td>
 						</tr>
 						<tr valign="top">
 							<th scope="row"><label for="inputtext">Display (1〜20)</label></th>
 							<td>
-								<input name="instapopup_options[display]" type="text" id="inputtext" type="number" value="<?php  echo $display ?>" class="regular-text" />
+								<input name="instapopup_options[display]" type="text" id="inputtext3" type="number" value="<?php  echo $display ?>" />
 							</td>
 						</tr>
 					</table>
-					<p class="submit"><input type="submit" name="Submit" class="button-primary" value="変更を保存" /></p>
+					<p><input type="submit" name="Submit" value="変更を保存" /></p>
 				</form>
 			</div>
 		<?php
 	}
 
-	function insta_data(){
+	function create() {
 
 		$opt = get_option('instapopup_options');
 		$Insta = new Insta( $opt['account'] , $opt['token'] , $opt['display'] );
-		$instagramData = $Insta->getInstaData();
 
-		$instaContents = [];
-		$index = 0;
-
-		foreach ($instagramData->data as $data) {
-			$instaContents[$index]['url'] = $data->link;
-			$instaContents[$index]['thum'] = $data->images->standard_resolution->url;
-
-
-
-			if( $data->caption === null ){
-
-				$instaContents[$index]['created_time'] =  date ('F d,Y', $data->created_time);
-				$instaContents[$index]["caption"] = '';
-				$instaContents[$index]["hashTagList"] = '';
-
-			}else{
-
-				$captionText = $data->caption->text;
-
-				$hashTagArray = [];
-				$hashLength = intval( substr_count($data->caption->text, "#") );
-				$matches = preg_match_all('/(#[a-zA-Z0-9\x81-\x9f\xe0-\xfc\x40-\x7e\x80-\xfc]+)/', $captionText, $hashTags);
-				$captionTextNew = str_replace($hashTags[0],'',$captionText);
-
-				$instaContents[$index]['created_time'] =  date ('F d,Y', $data->caption->created_time);
-				$instaContents[$index]["caption"] = $captionTextNew;
-				$instaContents[$index]["hashTagList"] = $hashTags[0];
-
-
-			}
-
-			$instaContents[$index]['id'] = $data->id;
-			$instaContents[$index]["like"] = $data->likes->count;
-
-			$index++;
-		}
-
-		return $instaContents;
-	}
-
-
-
-	function create() {
 		$html = '';
-		$instaData = $this->insta_data();
+		$instaData = $Insta->getInstaData();
 
 		foreach ($instaData as $data) {
 
 			if ($data === reset($instaData)) {
-				$html = $html . '<ul>';
+				$html .= '<ul id="insta_popup" class="insta_popup_list">';
 			}
 
-			$html = $html ."<li class=''>";
-			$html = $html ."<a href='#inline{$data['id']}' class=''>";
-			$html = $html ."<img src='{$data['thum']}' class='' />";
-			$html = $html ."<p class=''>{$data['created_time']}</p>";
-			$html = $html . "</a>";
-			$html = $html . "</li>";
+			$li = <<< EOM
+				<li class="insta_popup_item">
+					<a href="#{$data['id']}" class="insta_popup_link">
+						<img src="{$data['thum']}" class="insta_popup_img" />
+						<p class="insta_popup_day">{$data['created_time']}</p>
+					</a>
+				</li>
+EOM;
+			$html .=  $li;
 
 			if ($data === end($instaData)) {
-				$html = $html . '</ul>';
+				$html .= '</ul>';
 			}
 		}
 
-		return $html;
+		$html .= "<div style='display:none'>";
+		foreach ($instaData as $data) {
+			$html .= "<div id='{$data['id']}' class='insta_popup' >";
 
+				if( $data['movie'] ){
+					$html .= "<video controls style='width: 100%'>";
+						$html .= "<source src='{$data['movie']}' type='video/mp4; codecs='avc1.42E01E, mp4a.40.2''>";
+						$html .= "<p>動画を再生するには、videoタグをサポートしたブラウザが必要です。</p>";
+					$html .= "</video>";
+				}else{
+					$html .= "<img src='{$data['thum']}' class='blog__img' alt='' />";
+				}
+
+				$html .= "<div class='insta_popup_head'>";
+					$html .= "<p class='insta_popup_date'>{$data['created_time']}</p>";
+					$html .= "<p class='insta_popup_like'>♥ {$data['like']}</p>";
+				$html .= "</div>";
+				$html .= "<div class='insta_popup_body'>";
+					$html .= "<p class='insta_popup_caption'>{$data['caption']}</p>";
+					$html .= "<ul class='insta_popup_hash_list'>";
+						foreach( $data['hashTagList'] as $tag) {
+							$html .= "<li class='insta_popup_hash_item'>{$tag}</li>";
+						}
+					$html .= "</ul>";
+				$html .= "</div>";
+			$html .= "</div>";
+		}
+		$html .= "</div>";
+		return $html;
 	}
 }
 

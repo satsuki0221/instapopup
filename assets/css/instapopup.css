@@ -1,0 +1,102 @@
+
+.insta_popup_list , .insta_popup_list *{
+	box-sizing: border-box;
+}
+
+.insta_popup_list{
+	font-size: 0;
+	text-align: left;
+}
+
+.insta_popup_item{
+	width: 25%;
+	display: inline-block;
+	padding: 0 15px;
+}
+
+.insta_popup_img{
+	width: 100%;
+}
+
+.insta_popup_day{
+	font-size: 14px;
+	color: #000;
+	margin-top: 10px;
+	margin-bottom: 35px;
+}
+
+.insta_popup , .insta_popup *{
+	box-sizing: border-box;
+}
+
+.insta_popup {
+    width: 530px;
+	padding: 25px;
+	background-color: #fff;
+}
+
+.insta_popup_head {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.insta_popup_head:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+
+.insta_popup_head::after {
+    clear: both;
+    content: "";
+    display: table;
+}
+
+.insta_popup_date {
+    font-size: 16px;
+    float: left;
+	margin: 0;
+}
+
+
+.insta_popup_like {
+	float: right;
+	font-family: "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
+	font-size: 13px;
+	color: #969696;
+	margin: 0;
+}
+
+
+.insta_popup_caption {
+	font-family: "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
+	font-size: 12px;
+	line-height: 1.6;
+	margin-bottom: 10px;
+}
+
+.insta_popup_hash_list{
+	margin: 0;
+	list-style: none;
+}
+
+.insta_popup_hash_list:after {
+	clear: both;
+	content: "";
+	display: table;
+}
+
+.insta_popup_hash_list::after {
+	clear: both;
+	content: "";
+	display: table;
+}
+
+.insta_popup_hash_item {
+    font-size: 12px;
+    font-family: "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
+    color: #969696;
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
