@@ -8,10 +8,10 @@ Wordpress内に、リスト形式で並べて、
 
 # 使用方法
 
-管理画面で、
+管理画面で、  
 username,  
-access token,  
-表示数  ,
+access token,   
+表示数,  
 を登録します。  
 
 Access Tokenの取得に関してはGoogleにて検索をかけてください。  
