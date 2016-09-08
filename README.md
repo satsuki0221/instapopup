@@ -19,3 +19,7 @@ Access Tokenの取得に関してはGoogleにて検索をかけてください�
 その後、表示したい箇所に  
 <?php echo $instapopup->create(); ?>  
 と記述してください。
+
+# 使用例
+
+http://ymmo.sakura.ne.jp/insta_popup/
